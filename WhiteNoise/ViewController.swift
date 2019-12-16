@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     var imageArray: [UIImage] = []
     if let image = generateImage() {
       imageArray.append(image)
-      imageArray += splitImageAndGenerateNew(image: image)
+      imageArray += splitImageAndGenerateNew(image: image, width: Int(uiImageView.frame.width), height: Int(uiImageView.frame.height))
     }
     uiImageView.animationImages = imageArray
     uiImageView.startAnimating()
@@ -37,14 +37,18 @@ class ViewController: UIViewController {
   }
 
   private func generateImage() -> UIImage? {
-    let width = Int(uiImageView.frame.width)
-    let height = Int(uiImageView.frame.height)
+    var width = Int(uiImageView.frame.width)
+    var height = Int(uiImageView.frame.height)
     let size = CGSize(width: width, height: height)
+    
+    width = Int(uiImageView.frame.width / 2)
+    height = Int(uiImageView.frame.height / 2)
+    let minSize = CGSize(width: width, height: height)
+    
     let pointSize = CGSize(width: 1, height: 1)
     let startDate = Date()
     
-    UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-    let sysColor = UIColor.systemBlue.cgColor
+    UIGraphicsBeginImageContextWithOptions(minSize, false, 1.0)
     for i in 0 ... width {
       for j in 0 ... height {
         UIGraphicsGetCurrentContext()!.setFillColor(colors[Int.random(in: 0 ... 4)])
@@ -54,22 +58,38 @@ class ViewController: UIViewController {
     let colorImage = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
     
+    if let image = colorImage {
+      let rects = generateRects(width: Double(width), height: Double(height))
+      
+      var images = splitImageAndGenerateNew(image: image, width: width + 1, height: height + 1)
+      images.append(image)
+      let startDate1 = Date()
+      UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
+      images[0].draw(in: rects[0])
+      images[1].draw(in: rects[1])
+      images[2].draw(in: rects[2])
+      images[3].draw(in: rects[3])
+      if let finImage = UIGraphicsGetImageFromCurrentImageContext() {
+        UIGraphicsEndImageContext()
+        print(startDate1.timeIntervalSinceNow)
+        print(startDate.timeIntervalSinceNow)
+        return finImage
+      }
+    }
+    
     print(startDate.timeIntervalSinceNow)
     return colorImage
   }
   
-  private func splitImageAndGenerateNew(image: UIImage) -> [UIImage] {
+  private func splitImageAndGenerateNew(image: UIImage, width: Int, height: Int) -> [UIImage] {
     guard let cgImage = image.cgImage else { return [] }
     var imageArray: [UIImage] = []
     
-    let width = Int(uiImageView.frame.width)
-    let height = Int(uiImageView.frame.height)
+//    let width = Int(uiImageView.frame.width)
+//    let height = Int(uiImageView.frame.height)
     let size = CGSize(width: width, height: height)
     
-    let rects = [ CGRect(x: 0, y: 0, width: width/2, height: height/2),
-                  CGRect(x: width/2, y: 0, width: width/2, height: height/2),
-                  CGRect(x: 0, y: height/2, width: width/2, height: height/2),
-                  CGRect(x: width/2, y: height/2, width: width/2, height: height/2) ]
+    let rects = generateRects(width: Double(width / 2), height: Double(height / 2))
     
     guard let cgImage1 = cgImage.cropping(to: rects[0]),
           let cgImage2 = cgImage.cropping(to: rects[1]),
@@ -123,6 +143,13 @@ class ViewController: UIViewController {
     print(startDate.timeIntervalSinceNow)
     
     return imageArray
+  }
+  
+  private func generateRects(width: Double, height: Double) -> [CGRect] {
+    return [ CGRect(x: 0, y: 0, width: width, height: height),
+             CGRect(x: width, y: 0, width: width, height: height),
+             CGRect(x: 0, y: height, width: width, height: height),
+             CGRect(x: width, y: height, width: width, height: height) ]
   }
   
   private func generateColors() {
