@@ -15,20 +15,35 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nZw-Bp-bGQ">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nZw-Bp-bGQ">
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TAc-7H-WQu">
-                                <rect key="frame" x="184" y="832" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TAc-7H-WQu">
+                                <rect key="frame" x="159" y="44" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="test:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pxm-5I-Fzr"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vw4-RA-TAx">
+                                <rect key="frame" x="209" y="44" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="testt:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NHW-5Y-jJI"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="nZw-Bp-bGQ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="2YV-cB-A3K"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nZw-Bp-bGQ" secondAttribute="trailing" id="3Aj-b4-zwb"/>
+                            <constraint firstItem="nZw-Bp-bGQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="OOt-i3-Ryz"/>
+                            <constraint firstItem="vw4-RA-TAx" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="QOM-zF-RKE"/>
+                            <constraint firstItem="TAc-7H-WQu" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" constant="-25" id="TDZ-I3-5bP"/>
+                            <constraint firstItem="TAc-7H-WQu" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Xau-tm-LVC"/>
+                            <constraint firstItem="vw4-RA-TAx" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" constant="25" id="dpO-8w-jdA"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="nZw-Bp-bGQ" secondAttribute="bottom" id="qbM-JF-NUQ"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>

@@ -17,38 +17,43 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    generatePoints()
-    generateColors()
-    initial()
+    let date = Date()
+    uiImageView.animationImages = createStaticAnimation(compress: true, frame: uiImageView.frame)
+    print(date.timeIntervalSinceNow)
+    uiImageView.startAnimating()
   }
   
-  private func initial() {
-    let startDate = Date()
-    
+  private func createStaticAnimation(compress: Bool, frame: CGRect) -> [UIImage] {
     var imageArray: [UIImage] = []
-    if let image = generateImage() {
+    generatePoints(frame: uiImageView.frame)// may be crucial depending on screen size
+    generateColors()//fast enough
+    if let image = generateImage(compress: compress, frame: frame) {
       imageArray.append(image)
-      imageArray += splitImageAndGenerateNew(image: image, width: Int(uiImageView.frame.width), height: Int(uiImageView.frame.height))
+      imageArray += splitImageAndGenerateNew(image: image, width: Int(frame.width), height: Int(frame.height))
     }
-    uiImageView.animationImages = imageArray
-    uiImageView.startAnimating()
-    
-    print(startDate.timeIntervalSinceNow)
+    return imageArray
   }
 
-  private func generateImage() -> UIImage? {
-    var width = Int(uiImageView.frame.width)
-    var height = Int(uiImageView.frame.height)
+  private func generateImage(compress: Bool, frame: CGRect) -> UIImage? {
+    var width = Int(frame.width + 1)
+    var height = Int(frame.height + 1)
     let size = CGSize(width: width, height: height)
     
-    width = Int(uiImageView.frame.width / 2)
-    height = Int(uiImageView.frame.height / 2)
-    let minSize = CGSize(width: width, height: height)
+    width = Int(frame.width / 2 + 1)
+    height = Int(frame.height / 2 + 1)
+    let midSize = CGSize(width: width, height: height)
+    
+    if compress {
+      width = Int(frame.width / 4 + 1)
+      height = Int(frame.height / 4 + 1)
+      let minSize = CGSize(width: width, height: height)
+      UIGraphicsBeginImageContextWithOptions(minSize, false, 1.0)
+    } else {
+      UIGraphicsBeginImageContextWithOptions(midSize, false, 1.0)
+    }
     
     let pointSize = CGSize(width: 1, height: 1)
-    let startDate = Date()
     
-    UIGraphicsBeginImageContextWithOptions(minSize, false, 1.0)
     for i in 0 ... width {
       for j in 0 ... height {
         UIGraphicsGetCurrentContext()!.setFillColor(colors[Int.random(in: 0 ... 4)])
@@ -59,37 +64,46 @@ class ViewController: UIViewController {
     UIGraphicsEndImageContext()
     
     if let image = colorImage {
-      let rects = generateRects(width: Double(width), height: Double(height))
-      
-      var images = splitImageAndGenerateNew(image: image, width: width + 1, height: height + 1)
-      images.append(image)
-      let startDate1 = Date()
-      UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-      images[0].draw(in: rects[0])
-      images[1].draw(in: rects[1])
-      images[2].draw(in: rects[2])
-      images[3].draw(in: rects[3])
-      if let finImage = UIGraphicsGetImageFromCurrentImageContext() {
-        UIGraphicsEndImageContext()
-        print(startDate1.timeIntervalSinceNow)
-        print(startDate.timeIntervalSinceNow)
+      var ssize: CGSize
+      if compress {
+        height = height + 1
+        ssize = midSize
+      } else {
+        ssize = size
+      }
+      if let finImage = reGenerateImage(startImage: image, width: width, height: height, size: ssize) {
+        if compress {
+          return reGenerateImage(startImage: finImage, width: width * 2, height: height * 2, size: size)
+        }
         return finImage
       }
     }
-    
-    print(startDate.timeIntervalSinceNow)
-    return colorImage
+    return nil
+  }
+  
+  private func reGenerateImage(startImage: UIImage, width: Int, height: Int, size: CGSize) -> UIImage? {
+    let rects = generateRects(width: Double(width), height: Double(height))
+    var images = splitImageAndGenerateNew(image: startImage, width: width, height: height)
+    images.append(startImage)
+    UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
+    images[0].draw(in: rects[0])
+    images[1].draw(in: rects[1])
+    images[2].draw(in: rects[2])
+    images[3].draw(in: rects[3])
+    if let finalImage = UIGraphicsGetImageFromCurrentImageContext() {
+      UIGraphicsEndImageContext()
+      return finalImage
+    }
+    return nil
   }
   
   private func splitImageAndGenerateNew(image: UIImage, width: Int, height: Int) -> [UIImage] {
     guard let cgImage = image.cgImage else { return [] }
     var imageArray: [UIImage] = []
     
-//    let width = Int(uiImageView.frame.width)
-//    let height = Int(uiImageView.frame.height)
     let size = CGSize(width: width, height: height)
     
-    let rects = generateRects(width: Double(width / 2), height: Double(height / 2))
+    let rects = generateRects(width: Double(width / 2 + 1), height: Double(height / 2 + 1))
     
     guard let cgImage1 = cgImage.cropping(to: rects[0]),
           let cgImage2 = cgImage.cropping(to: rects[1]),
@@ -106,7 +120,6 @@ class ViewController: UIViewController {
                      UIImage(cgImage: cgImages[2]),
                      UIImage(cgImage: cgImages[3]) ]
     
-    var startDate = Date()
     UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
     images[0].draw(in: rects[1])
     images[1].draw(in: rects[2])
@@ -116,9 +129,7 @@ class ViewController: UIViewController {
       imageArray.append(finImage)
     }
     UIGraphicsEndImageContext()
-    print(startDate.timeIntervalSinceNow)
     
-    startDate = Date()
     UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
     images[0].draw(in: rects[2])
     images[1].draw(in: rects[3])
@@ -128,9 +139,7 @@ class ViewController: UIViewController {
       imageArray.append(finImage)
     }
     UIGraphicsEndImageContext()
-    print(startDate.timeIntervalSinceNow)
     
-    startDate = Date()
     UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
     images[0].draw(in: rects[3])
     images[1].draw(in: rects[0])
@@ -140,7 +149,6 @@ class ViewController: UIViewController {
       imageArray.append(finImage)
     }
     UIGraphicsEndImageContext()
-    print(startDate.timeIntervalSinceNow)
     
     return imageArray
   }
@@ -154,7 +162,6 @@ class ViewController: UIViewController {
   
   private func generateColors() {
     for i in 1 ... 5 {
-//      let random = (CGFloat(i - 1) * 10 + CGFloat.random(in: 0 ... 10)) / 100
       let random = (CGFloat(i - 1) * 20 + CGFloat.random(in: 0 ... 20)) / 100
       let color = UIColor(red: random,
                           green: random,
@@ -164,9 +171,9 @@ class ViewController: UIViewController {
     }
   }
   
-  private func generatePoints() {
-    let width = Int(uiImageView.frame.width)
-    let height = Int(uiImageView.frame.height)
+  private func generatePoints(frame: CGRect) {
+    let width = Int(frame.width / 2 + 1)
+    let height = Int(frame.height / 2 + 1)
     
     for i in 0 ... width {
       var arr: [CGPoint] = []
@@ -178,7 +185,16 @@ class ViewController: UIViewController {
   }
   
   @IBAction func test(_ sender: UIButton) {
-    initial()
+    let date = Date()
+    uiImageView.animationImages = createStaticAnimation(compress: true, frame: uiImageView.frame)
+    print(date.timeIntervalSinceNow)
+    uiImageView.startAnimating()
+  }
+  @IBAction func testt(_ sender: UIButton) {
+    let date = Date()
+    uiImageView.animationImages = createStaticAnimation(compress: false, frame: uiImageView.frame)
+    print(date.timeIntervalSinceNow)
+    uiImageView.startAnimating()
   }
 }
 extension UIColor {
