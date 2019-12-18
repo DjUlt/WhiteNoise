@@ -16,8 +16,18 @@ class WhiteNoiseView: UIImageView {
   private var colorIndexes: [[Int]] = []
   private var indexModa = 0
   
-  func generateFrames() {
+  required init?(coder: NSCoder) {
+    super.init(coder: coder)
     self.animationImages = createAnimationFrames(compress: true, frame: frame)
+  }
+  
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    self.animationImages = createAnimationFrames(compress: true, frame: frame)
+  }
+  
+  func generateFrames() -> [UIImage] {
+    return createAnimationFrames(compress: true, frame: frame)
   }
   
   private func createAnimationFrames(compress: Bool, frame: CGRect) -> [UIImage] {
@@ -64,7 +74,6 @@ class WhiteNoiseView: UIImageView {
     }
     let colorImage = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    
     
     if let image = colorImage {
       var ssize: CGSize

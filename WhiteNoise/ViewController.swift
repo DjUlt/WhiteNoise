@@ -14,12 +14,8 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
     let date = Date()
-    if lol.flag {
-      uiImageView.generateFrames()
-    } else {
-      imagee.generateFrames()
-    }
     print(date.timeIntervalSinceNow)
     if lol.flag {
       uiImageView.startAnimating()
